@@ -20,8 +20,8 @@ def welcome():
 # End Point to connect with Twillio for WhatsApp
 @app.route('/receive', methods=['POST'])
 def receive():
-    from_number = request.form['From']
-    to_number = request.form['To']
+    from_ = request.form['From']
+    to_ = request.form['To']
     body = request.form['Body']
     NumMedia = request.form['NumMedia']
     Media = None
