@@ -1,9 +1,11 @@
 from flask_pymongo import PyMongo
 from twilio.rest import Client
 from flask import Flask, request
-import personal_config
 import twillioHelp as tw
+import personal_config
+import requests
 import config
+import json
 
 # App initialize
 app = Flask(__name__)
@@ -54,7 +56,36 @@ def receive():
 @app.route('/callback', methods=['POST', 'GET'])
 def callback():
     print(request.method)
-    print(request.get_json())
+    captureObject = request.get_json()
+    print(captureObject["event"])
+    if captureObject["event"] == "payment_link.paid":
+
+        accountId="acc_GBihjkqRxFr1f6"
+        url = "https://api.razorpay.com/v1/payments/{}/transfers/".format(captureObject["payload"]["payment"]["entity"]["id"])
+        
+        payload=  {
+            "transfers": [
+                {
+                "account":accountId,
+                "amount": captureObject["payload"]["payment"]["entity"]["amount"],
+                "currency": "INR",
+                "notes": {
+                    "name": "Gaurav Kumar",
+                    "roll_no": "IEC2011025"
+                },
+                "on_hold": True,
+                "on_hold_until": 1671222870
+                }
+            ]
+        }
+
+        headers = {
+            'Content-type': 'application/json',
+            'Authorization': 'Basic cnpwX3Rlc3RfMDZLTnN3UnFCZXlWQnM6MW9oQkNjRGJpSXdpdjlvV1RBWUpsVW5M'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=json.dumps(payload))
+
     return 'Receive'
 
 # Main function
