@@ -22,19 +22,33 @@ def welcome():
 # End Point to connect with Twillio for WhatsApp
 @app.route('/receive', methods=['POST'])
 def receive():
+
     from_ = request.form['From']
     to_ = request.form['To']
     body = request.form['Body']
     NumMedia = request.form['NumMedia']
     Media = None
+
+    print(request.form)
     if NumMedia != '0':
         Media = request.form['MediaUrl0']
-    if body[0] == "/":
-        print("It is a command.")
-        tw.sendSMS(client, to_, from_, "It is command")
+    
     else:
-        print("It is a generic message.")
-        tw.sendSMS(client, to_, from_, "It is Generic Message")
+        try:
+            if body[0] == "/":
+                command = body.split(" ")
+                ctype = command[0]
+                if len(command) > 1:
+                    anytext = command[1]
+                    if ctype.lower() == "/greet":
+                        tw.sendSMS(client, to_, from_, "HI "+ anytext)
+                else:
+                    if ctype.lower()  == "/game":
+                        tw.sendSMS(client, to_, from_, "i will play with you")
+            else:
+                print("I did not understand")
+        except:
+            tw.sendSMS(client, to_, from_, "I did not understand")
     return 'Receive'
 
 @app.route('/callback', methods=['POST', 'GET'])
