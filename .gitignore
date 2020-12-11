@@ -3,3 +3,4 @@ ngrok
 personal_config.py
 env/*
 files/*
+data/*

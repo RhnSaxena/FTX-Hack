@@ -1,3 +1,4 @@
+from flask_pymongo import PyMongo
 from twilio.rest import Client
 from flask import Flask, request
 import personal_config
@@ -6,7 +7,8 @@ import config
 
 # App initialize
 app = Flask(__name__)
-
+app.config["MONGO_URI"] = "mongodb+srv://root:root@cluster0.g2z5c.mongodb.net/test"
+mongo = PyMongo(app)
 
 account = personal_config.SID
 token = personal_config.AUTH_TOKEN

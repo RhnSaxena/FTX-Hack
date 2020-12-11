@@ -1,3 +1,5 @@
 flask
 twilio
 urlpath
+Flask-PyMongo
+pymongo[srv]
