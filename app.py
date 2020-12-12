@@ -1,4 +1,5 @@
-from flask_pymongo import PyMongo
+# from flask_pymongo import PyMongo
+import pymongo
 from twilio.rest import Client
 from flask import Flask, request
 import twillioHelp as tw
@@ -9,8 +10,8 @@ import json
 
 # App initialize
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb+srv://root:root@cluster0.g2z5c.mongodb.net/ftx"
-mongo = PyMongo(app)
+clientdb = pymongo.MongoClient("mongodb+srv://root:root@cluster0.g2z5c.mongodb.net")
+db = clientdb.ftx.user
 
 account = personal_config.SID
 token = personal_config.AUTH_TOKEN
@@ -36,8 +37,8 @@ def receive():
         Media = request.form['MediaUrl0']
         print(Media)
         file_name = tw.DownloadFile(Media, from_, "files/")
-        teacherData = mongo.db.user.find_one_or_404({"user": from_})
-        tw.readCSV("files/",file_name+".csv",teacherData['accountId'],body)
+        teacherData = db.find_one({"user": from_})
+        tw.readCSV("files/",file_name+".csv",teacherData['accountId'],body, from_, db, teacherData['sheets'])
     
     else:
         try:
@@ -59,7 +60,6 @@ def receive():
 
 @app.route('/callback', methods=['POST', 'GET'])
 def callback():
-    print(request.method)
     captureObject = request.get_json()
     print(captureObject["event"])
     if captureObject["event"] == "payment_link.paid":
@@ -67,22 +67,23 @@ def callback():
         accountId="acc_GBihjkqRxFr1f6"
         url = "https://api.razorpay.com/v1/payments/{}/transfers/".format(captureObject["payload"]["payment"]["entity"]["id"])
         
+        notes = captureObject["payload"]["order"]["entity"]['notes']
         payload=  {
             "transfers": [
                 {
-                "account":accountId,
+                "account":notes['teacher_account_id'],
                 "amount": captureObject["payload"]["payment"]["entity"]["amount"],
                 "currency": "INR",
-                "notes": {
-                    "name": "Gaurav Kumar",
-                    "roll_no": "IEC2011025"
-                },
+                "notes": notes,
                 "on_hold": True,
                 "on_hold_until": 1671222870
                 }
             ]
         }
-
+        ans = db.find_one({"accountId": notes['teacher_account_id']})
+        sheets = ans['sheets']
+        sheets[notes['sheets']][int(notes['index'])]['status'] = "paid"
+        db.update_one({"accountId": notes['teacher_account_id']}, {'$set': {'sheets': sheets}})
         headers = {
             'Content-type': 'application/json',
             'Authorization': 'Basic cnpwX3Rlc3RfMDZLTnN3UnFCZXlWQnM6MW9oQkNjRGJpSXdpdjlvV1RBWUpsVW5M'

@@ -1,7 +1,7 @@
 import requests
 import json
 
-def create_link(student,amount,teacher_account_id):
+def create_link(student,amount,teacher_account_id, index, filename):
 
     print(student)
     print(amount)
@@ -19,15 +19,17 @@ def create_link(student,amount,teacher_account_id):
         "first_min_partial_amount": 100,
         "expire_by": 1691097057,
         "description": teacher_account_id,
+        "notes": {
+            'teacher_account_id':teacher_account_id,
+            'index': index,
+            'sheets': filename
+            },
         "customer": student,
         "notify": {
             "sms": True,
             "email": True
         },
         "reminder_enable": True,
-        "notes": {
-            "policy_name": "Jeevan Bima"
-        }
     }
 
     headers = {

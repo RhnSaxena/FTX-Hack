@@ -4,3 +4,4 @@ personal_config.py
 env/*
 files/*
 data/*
+ngrok.exe

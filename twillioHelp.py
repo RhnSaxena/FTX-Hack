@@ -6,6 +6,8 @@ import csv
 import personal_config
 import config
 import create_payment_link as pl
+import pymongo
+import json
 
 account = personal_config.SID
 token = personal_config.AUTH_TOKEN
@@ -26,8 +28,9 @@ def sendSMS(client, from_, to_, msg):
     except:
         return False
 
-def readCSV(dir, filename,teacher_account_id, originalFileName):
+def readCSV(dir, filename,teacher_account_id, originalFileName, from_, db, sheets):
     try:
+        arr = []
         with open(dir + filename) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             line_count = 0
@@ -37,16 +40,32 @@ def readCSV(dir, filename,teacher_account_id, originalFileName):
                     line_count += 1
                 else:
                     print(row)
-                    student = {"name":row[0],"contact" : "+91"+row[1],"email":row[2]}
-                    print(student)
                     amount = int(row[3])
+                    student = {
+                        "name":row[0],
+                        "contact" : "+91"+row[1],
+                        "email":row[2]
+                    }
+                    response = pl.create_link(student,amount, teacher_account_id, line_count-1,originalFileName)
                     print(amount)
-                    response = pl.create_link(student,amount,teacher_account_id)
                     print("------------------------------------")
+                    response = json.loads(response)
                     print(response)
                     print("-------------------------------------")
+                    student = {
+                        "name":row[0],
+                        "contact" : "+91"+row[1],
+                        "email":row[2],
+                        'amount': amount,
+                        'TransactionId': response['id'],
+                        'status': 'unpaid'
+                    }
+                    print(student)
+                    arr.append(student)
                     line_count += 1
             print(f'Processed {line_count} lines.')
+            sheets[originalFileName] = arr
+            db.update_one({'user':from_}, {'$set': {'sheets': sheets}})
             return True
     except:
         return False
@@ -59,3 +78,10 @@ if __name__ == "__main__":
     # client = Client(account, token)
     # print(sendSMS(client, to_, from_, "Siddharth"))
     readCSV("files/","unique1607688708.30055.csv")
+    # clientdb = pymongo.MongoClient("mongodb+srv://root:root@cluster0.g2z5c.mongodb.net")
+    # db = clientdb.ftx.user
+    # print(db)
+    # ans = db.find_one({'user':"whatsapp:+918604074906"})
+    # ans['sheets']['new'] = "sid"
+    # print(ans['sheets'])
+    # db.update_one({'user':"whatsapp:+918604074906"}, {'$set': {'sheets': ans['sheets']}})
