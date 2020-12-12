@@ -26,12 +26,11 @@ def sendSMS(client, from_, to_, msg):
     except:
         return False
 
-def readCSV(dir, filename,teacher_account_id):
+def readCSV(dir, filename,teacher_account_id, originalFileName):
     try:
         with open(dir + filename) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             line_count = 0
-            print("test")
             for row in csv_reader:
                 if line_count == 0:
                     print(f'Column names are {", ".join(row)}')
