@@ -11,8 +11,8 @@ import json
 
 # App initialize
 app = Flask(__name__)
-# clientdb = pymongo.MongoClient("mongodb+srv://root:root@cluster0.g2z5c.mongodb.net")
-clientdb = pymongo.MongoClient("mongodb://localhost:27017")
+clientdb = pymongo.MongoClient("mongodb+srv://root:root@cluster0.g2z5c.mongodb.net")
+# clientdb = pymongo.MongoClient("mongodb://localhost:27017")
 db = clientdb.ftx.user
 
 account = personal_config.SID
@@ -38,9 +38,11 @@ def receive():
     if NumMedia != '0':
         Media = request.form['MediaUrl0']
         print(Media)
+        tw.sendSMS(client, to_, from_, "Thank you for uploading file . we are processing it")
         file_name = tw.DownloadFile(Media, from_, "files/")
         teacherData = db.find_one({"user": from_})
         tw.readCSV("files/",file_name+".csv",teacherData['accountId'],body, from_, db, teacherData['sheets'])
+        tw.sendSMS(client, to_, from_, "we have created the payment links, the customers will receive them soon.")
     
     else:
         try:
@@ -55,15 +57,16 @@ def receive():
                         #  call the report generate function with user id , sheet_name ,paid/unpaid
                         # ans = rl.report_link(db,"whatsapp:+918604074906","file1","unpaid")
                         ans = rl.report_link(db,from_,command[1],command[2])
-
+                        ans = "Here you go,\n{}".format(ans)
                         tw.sendSMS(client, to_, from_, str(ans))
                 else:
                     if ctype.lower()  == "/game":
                         tw.sendSMS(client, to_, from_, "i will play with you")
             else:
                 print("I did not understand")
-        except:
-            tw.sendSMS(client, to_, from_, "I did not understand")
+        except Exception as err:
+            print(err)
+            tw.sendSMS(client, to_, from_, "Error occured")
     return 'Receive'
 
 @app.route('/callback', methods=['POST', 'GET'])

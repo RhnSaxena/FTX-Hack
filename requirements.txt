@@ -3,3 +3,7 @@ twilio
 urlpath
 Flask-PyMongo
 pymongo[srv]
+boto3
+docxtpl
+docx2pdf
+pandas
