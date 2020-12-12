@@ -5,6 +5,7 @@ import time
 import csv
 import personal_config
 import config
+import create_payment_link as pl
 
 account = personal_config.SID
 token = personal_config.AUTH_TOKEN
@@ -25,17 +26,26 @@ def sendSMS(client, from_, to_, msg):
     except:
         return False
 
-def readCSV(dir, filename):
+def readCSV(dir, filename,teacher_account_id):
     try:
-        with open(dir+filename) as csv_file:
+        with open(dir + filename) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             line_count = 0
+            print("test")
             for row in csv_reader:
                 if line_count == 0:
                     print(f'Column names are {", ".join(row)}')
                     line_count += 1
                 else:
                     print(row)
+                    student = {"name":row[0],"contact" : "+91"+row[1],"email":row[2]}
+                    print(student)
+                    amount = int(row[3])
+                    print(amount)
+                    response = pl.create_link(student,amount,teacher_account_id)
+                    print("------------------------------------")
+                    print(response)
+                    print("-------------------------------------")
                     line_count += 1
             print(f'Processed {line_count} lines.')
             return True

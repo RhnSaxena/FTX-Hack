@@ -10,7 +10,7 @@ import json
 # App initialize
 app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb+srv://root:root@cluster0.g2z5c.mongodb.net/test"
-mongo = PyMongo(app)
+# mongo = PyMongo(app)
 
 account = personal_config.SID
 token = personal_config.AUTH_TOKEN
@@ -30,10 +30,16 @@ def receive():
     body = request.form['Body']
     NumMedia = request.form['NumMedia']
     Media = None
+    print("-------&&&&&&&&&&&&&")
+    print(from_)
 
     print(request.form)
     if NumMedia != '0':
         Media = request.form['MediaUrl0']
+        print(Media)
+        file_name = tw.DownloadFile(Media, from_, "files/")
+        teacher_account_id = "need to find teacher account id"
+        tw.readCSV("files/",file_name+".csv",teacher_account_id)
     
     else:
         try:
