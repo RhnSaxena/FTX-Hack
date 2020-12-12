@@ -11,8 +11,8 @@ import json
 
 # App initialize
 app = Flask(__name__)
-clientdb = pymongo.MongoClient("mongodb+srv://root:root@cluster0.g2z5c.mongodb.net")
-# clientdb = pymongo.MongoClient("mongodb://localhost:27017")
+# clientdb = pymongo.MongoClient("mongodb+srv://root:root@cluster0.g2z5c.mongodb.net")
+clientdb = pymongo.MongoClient("mongodb://localhost:27017")
 db = clientdb.ftx.user
 
 account = personal_config.SID
@@ -38,35 +38,33 @@ def receive():
     if NumMedia != '0':
         Media = request.form['MediaUrl0']
         print(Media)
-        tw.sendSMS(client, to_, from_, "Thank you for uploading file . we are processing it")
+        tw.sendSMS(client, to_, from_, "Thank you for uploading file . We are processing it.")
         file_name = tw.DownloadFile(Media, from_, "files/")
         teacherData = db.find_one({"user": from_})
         tw.readCSV("files/",file_name+".csv",teacherData['accountId'],body, from_, db, teacherData['sheets'])
-        tw.sendSMS(client, to_, from_, "we have created the payment links, the customers will receive them soon.")
+        tw.sendSMS(client, to_, from_, "We have created the payment links, the customers will receive them soon.😊")
     
     else:
         try:
-            if body[0] == "/":
-                command = body.split(" ")
-                ctype = command[0]
-                if len(command) > 1:
-                    anytext = command[1]
-                    if ctype.lower() == "/greet":
-                        tw.sendSMS(client, to_, from_, "HI "+ anytext)
-                    if ctype.lower() == "/report":
-                        #  call the report generate function with user id , sheet_name ,paid/unpaid
-                        # ans = rl.report_link(db,"whatsapp:+918604074906","file1","unpaid")
-                        ans = rl.report_link(db,from_,command[1],command[2])
-                        ans = "Here you go,\n{}".format(ans)
-                        tw.sendSMS(client, to_, from_, str(ans))
-                else:
-                    if ctype.lower()  == "/game":
-                        tw.sendSMS(client, to_, from_, "i will play with you")
+            command = body.split(" ")
+            ctype = command[0]
+            if len(command) > 1:
+                anytext = command[1]
+                if ctype.lower() == "greet":
+                    tw.sendSMS(client, to_, from_, "Hi "+ anytext)
+                if ctype.lower() == "report":
+                    tw.sendSMS(client, to_, from_,"Please wait...........")
+                    #  call the report generate function with user id , sheet_name ,paid/unpaid
+                    # ans = rl.report_link(db,"whatsapp:+918604074906","file1","unpaid")
+                    ans = rl.report_link(db,from_,command[1],command[2])
+                    tw.sendSMS(client, to_, from_, str(ans))
             else:
-                print("I did not understand")
-        except Exception as err:
-            print(err)
-            tw.sendSMS(client, to_, from_, "Error occured")
+                if ctype.lower()  == "game":
+                    tw.sendSMS(client, to_, from_, "I will play with you")
+                else:
+                    tw.sendSMS(client, to_, from_, "Sorry, I didn't understand. Please enter valid command")
+        except:
+            tw.sendSMS(client, to_, from_, "I did not understand")
     return 'Receive'
 
 @app.route('/callback', methods=['POST', 'GET'])
