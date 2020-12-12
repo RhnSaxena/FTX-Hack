@@ -3,6 +3,7 @@ import pymongo
 from twilio.rest import Client
 from flask import Flask, request
 import twillioHelp as tw
+import report_link as rl
 import personal_config
 import requests
 import config
@@ -10,7 +11,8 @@ import json
 
 # App initialize
 app = Flask(__name__)
-clientdb = pymongo.MongoClient("mongodb+srv://root:root@cluster0.g2z5c.mongodb.net")
+# clientdb = pymongo.MongoClient("mongodb+srv://root:root@cluster0.g2z5c.mongodb.net")
+clientdb = pymongo.MongoClient("mongodb://localhost:27017")
 db = clientdb.ftx.user
 
 account = personal_config.SID
@@ -49,6 +51,12 @@ def receive():
                     anytext = command[1]
                     if ctype.lower() == "/greet":
                         tw.sendSMS(client, to_, from_, "HI "+ anytext)
+                    if ctype.lower() == "/report":
+                        #  call the report generate function with user id , sheet_name ,paid/unpaid
+                        # ans = rl.report_link(db,"whatsapp:+918604074906","file1","unpaid")
+                        ans = rl.report_link(db,from_,command[1],command[2])
+
+                        tw.sendSMS(client, to_, from_, str(ans))
                 else:
                     if ctype.lower()  == "/game":
                         tw.sendSMS(client, to_, from_, "i will play with you")

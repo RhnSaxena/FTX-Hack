@@ -3,14 +3,7 @@ import json
 
 def create_link(student,amount,teacher_account_id, index, filename):
 
-    print(student)
-    print(amount)
-
-    print("rishi")
-
     url = "https://api.razorpay.com/v1/payment_links"
-
-    print("rishi")
 
     payload= {
         "amount": amount*100,
