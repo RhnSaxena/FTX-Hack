@@ -25,10 +25,28 @@ def sendSMS(client, from_, to_, msg):
     except:
         return False
 
+def readCSV(dir, filename):
+    try:
+        with open(dir+filename) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            line_count = 0
+            for row in csv_reader:
+                if line_count == 0:
+                    print(f'Column names are {", ".join(row)}')
+                    line_count += 1
+                else:
+                    print(row)
+                    line_count += 1
+            print(f'Processed {line_count} lines.')
+            return True
+    except:
+        return False
+
 if __name__ == "__main__":
-    url = "https://api.twilio.com/2010-04-01/Accounts/ACee88cc6b6cf96910936801fa3726ccb5/Messages/MM2fb4f534d37e75bc93ec1daad6699373/Media/MEe5fe52624fc4d3e98e8439a14fb1625d";
-    DownloadFile(url,"unique","files/")
-    to_="whatsapp:+14155238886"
-    from_="whatsapp:+918604074906"
-    client = Client(account, token)
-    print(sendSMS(client, to_, from_, "Siddharth"))
+    # url = "https://api.twilio.com/2010-04-01/Accounts/ACee88cc6b6cf96910936801fa3726ccb5/Messages/MM2fb4f534d37e75bc93ec1daad6699373/Media/MEe5fe52624fc4d3e98e8439a14fb1625d";
+    # DownloadFile(url,"unique","files/")
+    # to_="whatsapp:+14155238886"
+    # from_="whatsapp:+918604074906"
+    # client = Client(account, token)
+    # print(sendSMS(client, to_, from_, "Siddharth"))
+    readCSV("files/","unique1607688708.30055.csv")
