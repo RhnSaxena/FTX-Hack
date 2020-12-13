@@ -73,10 +73,18 @@ For Windows: `./env/bin/activate`
     }
 }
 ````
+## Control Flow Diagram
+![control Flow](/images/controlflow.jpeg)
 
 ## Flow (use case) for Tution teacher for payments
 
 ![Flow](/images/mermaid.png)
+
+## Software Features
+1) User just have to upload file having his customer Name, Phone number, Email, Amount.
+2) Just one command to share link to 1000s of customers. 
+3) User payment settle after each payment. 
+2) User can get instant report of paid/unpaid Transaction
 
 ## Screenshots
 ![you can share sheet with Whatsapp](/images/sharewithwhatsapp.png)
