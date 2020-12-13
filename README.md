@@ -25,6 +25,17 @@ Link DB: <https://www.mongodb.com/try/download/community>
  SID = "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
  AUTH_TOKEN = "94xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
  MONGO_URL = "mongodb://user:password@localhost:27017/test"
+ aws_config={
+  "aws_access_key_id":"AXXXXXXXXXXXXXXXXXXXX", 
+  "aws_secret_access_key":"xfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+
+aws_bucket={
+  "bucket_name":"xxxxxx"
+}
+
+emailAddress="xxxxxxx@gmail.com"
+emailPassword="**********"
 ```
 
 4. Create Virtualenv `virtualenv venv --python=python3.6`
@@ -36,25 +47,34 @@ For Windows: `./env/bin/activate`
 8.  `./ngrok http 3000`
 9. Add ngrok url into twilio <https://www.twilio.com/console/sms/whatsapp/sandbox> in **when message comes in** field.
 
-## Database minimum entries required before start using your service 
+## Database minimum entries required before start using your service
 
-{}
+````bash
+{
+    "user": "whatsapp:+919999999999",
+    "accountId": "acc_xxxxxxxxxxxxxx",
+    "sheets": {
+        "file1": [{
+            "name": "Rishi Agrawal",
+            "contact": "+91888888888",
+            "email": "rishi@gmail.com",
+            "amount": 5,
+            "TransactionId": "plink_xxxxxxxxxxxxxx",
+            "status": "unpaid"
+        }, {
+            "name": "Siddharth",
+            "contact": "+917777777777",
+            "email": "siddharth@gmail.com",
+            "amount": 10,
+            "TransactionId": "plink_xxxxxxxxxxxxxx",
+            "status": "unpaid"
+        }],
+    }
+}
+````
 
 ## Flow (use case) for Tution teacher for payments
 
-```mermaid
-graph LR
-
-A(Teacher) -- WhatsApp --> B((Server))
-A -- Email --> B
-A -- Report Generate --> B
-B --> M(MongoDB)
-B --> D{RazorPay API}
-B -- Send Payouts instantly to teacher --> D
-D -- Payments Link --> E(Students)
-D -- Transfer to Teacher --> A
-E -- Pay --> D
-M --> B
-```
+![Flow](/images/mermaid.png)
 
 ## Testimonials
