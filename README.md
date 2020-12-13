@@ -77,3 +77,10 @@ For Windows: `./env/bin/activate`
 ## Flow (use case) for Tution teacher for payments
 
 ![Flow](/images/mermaid.png)
+
+## Screenshots
+![you can share sheet with Whatsapp](/images/sharewithwhatsapp.png)
+![you can share sheet with Google Docs](/images/sharewithdocs.png)
+![you can share sheet with Email also](/images/sharewithemail.png)
+![To get report](/images/togetreport.png)
+![Example Report](/images/report.png)
