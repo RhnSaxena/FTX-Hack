@@ -11,6 +11,8 @@ import personal_config
 import smtplib
 import ssl
 from email.message import EmailMessage
+import report_link as rl
+
 
 def sendEmail(text, toUser,subjectText):
     usr =personal_config.emailAddress
@@ -36,15 +38,15 @@ def sendEmail(text, toUser,subjectText):
 
 
 
-
 def readEmail():
     emailData = []
+    reportData = []
     email_user = personal_config.emailAddress
     email_pass = personal_config.emailPassword
     mail = imaplib.IMAP4_SSL("imap.gmail.com",993)
     mail.login(email_user, email_pass)
     mail.select('Inbox')
-    type, data = mail.search(None, 'UNSEEN', '(SUBJECT "Fee Collect% ")')
+    type, data = mail.search(None, 'UNSEEN', '(SUBJECT "Fee Collect%")')
     mail_ids = data[0]
     id_list = mail_ids.split()
     for num in data[0].split():
@@ -80,14 +82,40 @@ def readEmail():
                     fp.write(part.get_payload(decode=True))
                     fp.close()
 
-    return emailData
+    
+    mail.select('Inbox')
+    type, data = mail.search(None, 'UNSEEN', '(SUBJECT "Report Generate%")')
+    mail_ids = data[0]
+    id_list = mail_ids.split()
+    for num in data[0].split():
+        typ, data = mail.fetch(num, '(RFC822)' )
+        raw_email = data[0][1]
+        raw_email_string = raw_email.decode('utf-8')
+        email_message = email.message_from_string(raw_email_string)
+        mailSubject = str(email_message).split("Subject: ", 1)[1].split("\n", 1)[0] 
+        sender = str(email_message).split("From: ", 1)[1].split("<", 1)[1].split(">", 1)[0]
+        reportData.append({
+            "user": mailSubject.split(" ")[3],
+            "fileName": mailSubject.split(" ")[4],
+            "status": mailSubject.split(" ")[5],
+            "mailerId":sender
+        })
+        sender = str(email_message).split("From: ", 1)[1].split("<", 1)[1].split(">", 1)[0]
+
+
+
+    print(emailData)
+    print("-------------")
+    print(reportData)
+
+    return emailData, reportData
     
 
 
 
 if __name__ == "__main__":
     while True:
-        data=readEmail()
+        data,dataReport=readEmail()
         if len(data) !=0:
             clientdb = pymongo.MongoClient("mongodb+srv://root:root@cluster0.g2z5c.mongodb.net")
             # clientdb = pymongo.MongoClient("mongodb://localhost:27017")
@@ -105,5 +133,16 @@ if __name__ == "__main__":
                 tw.readCSV("files/",item["fileName"],teacherData['accountId'],item["fileName"], item["user"], db, teacherData['sheets'])
                 print("created links")
                 sendEmail("Payment Links created, the customers will soon receive the links.",item["mailerId"],"Request Serviced")
+
+        if len(dataReport)!=0:
+            clientdb = pymongo.MongoClient("mongodb+srv://root:root@cluster0.g2z5c.mongodb.net")
+            # clientdb = pymongo.MongoClient("mongodb://localhost:27017")
+            db = clientdb.ftx.user
+            print("In dataReport")
+            for item in dataReport:
+                print(item)
+                ans = rl.report_link(db,item["user"],item["fileName"],item["status"])
+                print(ans)
+                sendEmail("Thanks for using FTX Hack. Please find the report in the link {}".format(ans),item["mailerId"],"Request Serviced")
 
 
