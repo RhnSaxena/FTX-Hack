@@ -73,6 +73,8 @@ For Windows: `./env/bin/activate`
     }
 }
 ````
+## Control Flow Diagram
+![control Flow](/images/controlflow.jpeg)
 
 ## Flow (use case) for Tution teacher for payments
 
