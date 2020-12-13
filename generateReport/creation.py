@@ -1,8 +1,7 @@
 import uuid
 import os
-# import pythoncom
-
-
+import pythoncom
+from datetime import date
 from generateReport.cloud import upload_to_S3
 from docxtpl import DocxTemplate
 from docx2pdf import convert
@@ -14,6 +13,7 @@ def createDocx(context,file_name):
 
 def createReport(data,fileName):
     print(1)
+    data["date"]=date.today()
     createDocx(data,"{file}.{extention}".format(file=fileName,extention="docx"))
     print(2)
     pythoncom.CoInitialize()
