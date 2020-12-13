@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a WhatsApp Service aimed at reducing the hassle of small business and vendor and helping them to get their payments in one click either from your Smart Phone.   
+A smart Spreadsheet based solution, that can be shared with a chatbot or sent over through an email, to subsequently generate payment links for payment collection.
 
 ## Prerequisite
 
@@ -46,8 +46,9 @@ For Windows: `./env/bin/activate`
 7. Start the server `python ./app.py`
 8.  `./ngrok http 3000`
 9. Add ngrok url into twilio <https://www.twilio.com/console/sms/whatsapp/sandbox> in **when message comes in** field.
+10. Add webhook event `payment_link.paid` through Razorpay Account to send callback to main server for payment settlement.
 
-## Database minimum entries required before start using your service
+## Database Structure
 
 ````bash
 {
@@ -76,5 +77,3 @@ For Windows: `./env/bin/activate`
 ## Flow (use case) for Tution teacher for payments
 
 ![Flow](/images/mermaid.png)
-
-## Testimonials
